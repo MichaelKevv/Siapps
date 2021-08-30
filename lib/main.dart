@@ -146,9 +146,11 @@ class SiAppsHome extends StatelessWidget {
                       ),
                       Card(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(45),
-                                topRight: Radius.circular(45))),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45),
+                          ),
+                        ),
                         color: Colors.yellow[600],
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(25, 5, 0, 5),
@@ -191,33 +193,36 @@ class SiAppsHome extends StatelessWidget {
                       ),
                       Card(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(45),
-                                topRight: Radius.circular(45))),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45),
+                          ),
+                        ),
                         color: Colors.indigo[800],
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(25, 5, 0, 5),
                           child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 5.0, 0),
-                                    child: Image.asset(
-                                      'assets/images/logo_halal_2.png',
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 5.0, 0),
+                                  child: Image.asset(
+                                    'assets/images/logo_halal_2.png',
+                                    color: Colors.white,
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                ),
+                                Text(
+                                  "Toko Halal",
+                                  style: TextStyle(
                                       color: Colors.white,
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Toko Halal",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              )),
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
@@ -239,9 +244,11 @@ class SiAppsHome extends StatelessWidget {
                       ),
                       Card(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(45),
-                                topRight: Radius.circular(45))),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45),
+                          ),
+                        ),
                         color: Colors.indigo[800],
                         child: Padding(
                             padding: EdgeInsets.fromLTRB(25, 5, 0, 5),
@@ -409,14 +416,25 @@ class cardTokoHalal extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
-              child: FlutterLogo(
-                size: 40.0,
-              )),
-          Text(
-            teks,
-            style: TextStyle(fontSize: 12.0),
+          TextButton(
+            style: TextButton.styleFrom(
+                primary: Color(0xff000000),
+                textStyle: TextStyle(fontWeight: FontWeight.normal)),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
+                  child: FlutterLogo(
+                    size: 80,
+                  ),
+                ),
+                Text(
+                  teks,
+                  style: TextStyle(fontSize: 12.0),
+                ),
+              ],
+            ),
+            onPressed: () {},
           ),
         ],
       ),
