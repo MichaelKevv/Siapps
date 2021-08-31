@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(
+    MaterialApp(
       home: SiAppsHome(),
       title: 'SiApps',
       routes: <String, WidgetBuilder>{
@@ -13,11 +17,14 @@ void main() {
         '/BayarBerobat': (BuildContext context) => BayarBerobat(),
         '/BayarTransport': (BuildContext context) => BayarTransport(),
         '/TabungEmas': (BuildContext context) => TabungEmas(),
-      }));
+      },
+    ),
+  );
 }
 
 class SiAppsHome extends StatelessWidget {
   String nama = 'Arry';
+  String money = '189.000';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +92,7 @@ class SiAppsHome extends StatelessWidget {
                                       ],
                                     ),
                                     Text(
-                                      '189.000',
+                                      money,
                                       style: TextStyle(
                                           letterSpacing: 2,
                                           fontWeight: FontWeight.bold),
@@ -496,7 +503,62 @@ class cardTerkini extends StatelessWidget {
   }
 }
 
-class BayarSekolah extends StatelessWidget {
+class BayarSekolah extends StatefulWidget {
+  @override
+  _BayarSekolahState createState() => _BayarSekolahState();
+}
+
+class _BayarSekolahState extends State<BayarSekolah> {
+  List data = [];
+
+  List<Container> daftarSekolah = [];
+  List sekolah = [
+    {"nama": "SMP 1"},
+    {"nama": "SMA 1"},
+  ];
+
+  _buatlist() async {
+    for (var i = 0; i < sekolah.length; i++) {
+      final sekolahnya = sekolah[i];
+      daftarSekolah.add(
+        Container(
+          padding: EdgeInsets.all(5),
+          child: Card(
+            child: Column(
+              children: [
+                Icon(
+                  Icons.home,
+                  size: 50.0,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(sekolahnya["nama"]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future getData() async {
+    http.Response hasil = await http.get(
+      Uri.parse("https://612e3c43d11e5c0017558446.mockapi.io/sekolah"),
+      headers: {"Accept": 'application/json'},
+    );
+
+    this.setState(() {
+      data = jsonDecode(hasil.body);
+    });
+  }
+
+  @override
+  void initState() {
+    // _buatlist();
+    this.getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -504,6 +566,44 @@ class BayarSekolah extends StatelessWidget {
         backgroundColor: Colors.orange,
         title: Text('Bayar Sekolah'),
       ),
+      body: GridView.builder(
+        padding: EdgeInsets.all(5),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemCount: data == null ? 0 : data.length,
+        itemBuilder: (context, i) {
+          return Container(
+            padding: EdgeInsets.all(5),
+            child: Card(
+              child: Column(
+                children: [
+                  if (data == '') ...[
+                    Text('Data Kosong') // masih belum work buat yg ini
+                  ] else ...[
+                    Image.network(
+                      data[i]['image'],
+                      fit: BoxFit.cover,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        data[i]['nama'] == null
+                            ? 'Tidak Ada Data'
+                            : data[i]['nama'],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      //     GridView.count(
+      //   crossAxisCount: 2,
+      //   children: daftarSekolah,
+      // ),
     );
   }
 }
