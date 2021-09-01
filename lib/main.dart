@@ -580,8 +580,8 @@ class BayarKuliah extends StatefulWidget {
 
 class _BayarKuliahState extends State<BayarKuliah> {
   Future _getData() async {
-    final response =
-        await http.get(Uri.parse("http://192.168.1.9/siapps/getdata.php"));
+    final response = await http
+        .get(Uri.parse("https://siapps.000webhostapp.com/getdata.php"));
     return jsonDecode(response.body);
   }
 
