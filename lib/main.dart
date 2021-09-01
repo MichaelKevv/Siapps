@@ -632,7 +632,10 @@ class ItemList extends StatelessWidget {
               child: Card(
                 child: ListTile(
                   title: Text(list[i]['nama_univ']),
-                  leading: Icon(Icons.home),
+                  leading: Icon(
+                    Icons.home,
+                    size: 50.0,
+                  ),
                   subtitle: Text("Kode Univ : ${list[i]['kode_univ']}"),
                 ),
               ),
