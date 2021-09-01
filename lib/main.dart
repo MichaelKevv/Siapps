@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import './detail.dart';
 
 void main() {
   runApp(
@@ -511,37 +512,6 @@ class BayarSekolah extends StatefulWidget {
 class _BayarSekolahState extends State<BayarSekolah> {
   List data = [];
 
-  List<Container> daftarSekolah = [];
-  List sekolah = [
-    {"nama": "SMP 1"},
-    {"nama": "SMA 1"},
-  ];
-
-  _buatlist() async {
-    for (var i = 0; i < sekolah.length; i++) {
-      final sekolahnya = sekolah[i];
-      daftarSekolah.add(
-        Container(
-          padding: EdgeInsets.all(5),
-          child: Card(
-            child: Column(
-              children: [
-                Icon(
-                  Icons.home,
-                  size: 50.0,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Text(sekolahnya["nama"]),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
   Future getData() async {
     http.Response hasil = await http.get(
       Uri.parse("https://612e3c43d11e5c0017558446.mockapi.io/sekolah"),
@@ -555,7 +525,6 @@ class _BayarSekolahState extends State<BayarSekolah> {
 
   @override
   void initState() {
-    // _buatlist();
     this.getData();
   }
 
@@ -600,15 +569,22 @@ class _BayarSekolahState extends State<BayarSekolah> {
           );
         },
       ),
-      //     GridView.count(
-      //   crossAxisCount: 2,
-      //   children: daftarSekolah,
-      // ),
     );
   }
 }
 
-class BayarKuliah extends StatelessWidget {
+class BayarKuliah extends StatefulWidget {
+  @override
+  _BayarKuliahState createState() => _BayarKuliahState();
+}
+
+class _BayarKuliahState extends State<BayarKuliah> {
+  Future _getData() async {
+    final response =
+        await http.get(Uri.parse("http://192.168.1.9/siapps/getdata.php"));
+    return jsonDecode(response.body);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -616,7 +592,53 @@ class BayarKuliah extends StatelessWidget {
         backgroundColor: Colors.green,
         title: Text('Bayar Kuliah'),
       ),
+      body: FutureBuilder(
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+
+          return snapshot.hasData
+              ? ItemList(
+                  list: snapshot.data,
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
+                );
+        },
+        future: _getData(),
+      ),
     );
+  }
+}
+
+class ItemList extends StatelessWidget {
+  List list;
+  ItemList({required this.list});
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: list == null ? 0 : list.length,
+        itemBuilder: (context, i) {
+          return Container(
+            padding: EdgeInsets.all(5.0),
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => Detail(
+                    list: list,
+                    index: i,
+                  ),
+                ),
+              ),
+              child: Card(
+                child: ListTile(
+                  title: Text(list[i]['nama_univ']),
+                  leading: Icon(Icons.home),
+                  subtitle: Text("Kode Univ : ${list[i]['kode_univ']}"),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }
 
