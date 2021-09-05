@@ -1,9 +1,14 @@
+import 'package:SiApps/app_service.dart';
+import 'package:SiApps/bayarKuliah/AddDataWidget.dart';
+import 'package:SiApps/bayarKuliah/ListData.dart';
+
+import 'Model/bayarKuliahModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-import './detail.dart';
+import 'bayarKuliah/detailWidget.dart';
 
 void main() {
   runApp(
@@ -579,69 +584,58 @@ class BayarKuliah extends StatefulWidget {
 }
 
 class _BayarKuliahState extends State<BayarKuliah> {
-  Future _getData() async {
-    final response = await http
-        .get(Uri.parse("https://siapps.000webhostapp.com/getdata.php"));
-    return jsonDecode(response.body);
-  }
+  final ApiService api = ApiService();
+  List<bayarkuliah> listKuliah = [];
 
   @override
   Widget build(BuildContext context) {
+    if (listKuliah == null) {
+      listKuliah = [];
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text('Bayar Kuliah'),
       ),
-      body: FutureBuilder(
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-
-          return snapshot.hasData
-              ? ItemList(
-                  list: snapshot.data,
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
-                );
-        },
-        future: _getData(),
+      body: new Container(
+        child: new Center(
+            child: new FutureBuilder(
+          future: loadList(),
+          builder: (context, snapshot) {
+            return listKuliah.length > 0
+                ? new ListKuliah(bayarKuliah: listKuliah)
+                : new Center(
+                    child: Text('Tidak ada data ditemukan, silakan tambahkan!'),
+                  );
+          },
+        )),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _navigateToAddScreen(context);
+        },
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
 
-class ItemList extends StatelessWidget {
-  List list;
-  ItemList({required this.list});
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: list == null ? 0 : list.length,
-        itemBuilder: (context, i) {
-          return Container(
-            padding: EdgeInsets.all(5.0),
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) => Detail(
-                    list: list,
-                    index: i,
-                  ),
-                ),
-              ),
-              child: Card(
-                child: ListTile(
-                  title: Text(list[i]['nama_univ']),
-                  leading: Icon(
-                    Icons.home,
-                    size: 50.0,
-                  ),
-                  subtitle: Text("Kode Univ : ${list[i]['kode_univ']}"),
-                ),
-              ),
-            ),
-          );
-        });
+  Future loadList() {
+    Future<List<bayarkuliah>> futureCases = api.getCases();
+    futureCases.then((casesList) {
+      setState(() {
+        this.listKuliah = casesList;
+      });
+    });
+    return futureCases;
+  }
+
+  _navigateToAddScreen(BuildContext context) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => AddDataWidget(),
+      ),
+    );
   }
 }
 
