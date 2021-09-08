@@ -1,5 +1,6 @@
 import 'package:SiApps/app_service.dart';
 import 'package:SiApps/bayarKuliah/AddDataWidget.dart';
+import 'package:SiApps/bayarKuliah/DetailWidget.dart';
 import 'package:SiApps/bayarKuliah/ListData.dart';
 
 import 'Model/bayarKuliahModel.dart';
@@ -8,7 +9,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'bayarKuliah/detailWidget.dart';
+
+import 'package:dio/dio.dart';
+import 'bayarKuliah/Detail.dart';
+// @dart=2.9
 
 void main() {
   runApp(
@@ -578,56 +584,115 @@ class _BayarSekolahState extends State<BayarSekolah> {
   }
 }
 
+// class BayarKuliah extends StatefulWidget {
+//   @override
+//   _BayarKuliahState createState() => _BayarKuliahState();
+// }
+
+// class _BayarKuliahState extends State<BayarKuliah> {
+//   final ApiService api = ApiService();
+//   List<bayarkuliah> listKuliah = [];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (listKuliah == null) {
+//       listKuliah = [];
+//     }
+//     return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Colors.green,
+//         title: Text('Bayar Kuliah'),
+//       ),
+//       body: new Container(
+//         child: new Center(
+//             child: new FutureBuilder(
+//           future: loadList(),
+//           builder: (context, snapshot) {
+//             return listKuliah.length > 0
+//                 ? new ListKuliah(bayarKuliah: listKuliah)
+//                 : new Center(
+//                     child: Text('Tidak ada data ditemukan, silakan tambahkan!'),
+//                   );
+//           },
+//         )),
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () {
+//           _navigateToAddScreen(context);
+//         },
+//         tooltip: 'Increment',
+//         child: Icon(Icons.add),
+//       ), // This trailing comma makes auto-formatting nicer for build methods.
+//     );
+//   }
+
+//   Future loadList() {
+//     Future<List<bayarkuliah>> futureCases = api.getCases();
+//     futureCases.then((casesList) {
+//       setState(() {
+//         this.listKuliah = casesList;
+//       });
+//     });
+//     return futureCases;
+//   }
+
+//   _navigateToAddScreen(BuildContext context) async {
+//     final result = await Navigator.of(context).push(
+//       MaterialPageRoute(
+//         builder: (BuildContext context) => AddDataWidget(),
+//       ),
+//     );
+//   }
+// }
+
+// NEXT
+
 class BayarKuliah extends StatefulWidget {
+  const BayarKuliah({Key? key}) : super(key: key);
+
   @override
   _BayarKuliahState createState() => _BayarKuliahState();
 }
 
 class _BayarKuliahState extends State<BayarKuliah> {
-  final ApiService api = ApiService();
-  List<bayarkuliah> listKuliah = [];
+  // We will fetch data from this Rest api
+  final _baseUrl =
+      'https://siapps.000webhostapp.com/bayarKuliah/getDataKuliah.php';
 
-  @override
-  Widget build(BuildContext context) {
-    if (listKuliah == null) {
-      listKuliah = [];
-    }
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: Text('Bayar Kuliah'),
-      ),
-      body: new Container(
-        child: new Center(
-            child: new FutureBuilder(
-          future: loadList(),
-          builder: (context, snapshot) {
-            return listKuliah.length > 0
-                ? new ListKuliah(bayarKuliah: listKuliah)
-                : new Center(
-                    child: Text('Tidak ada data ditemukan, silakan tambahkan!'),
-                  );
-          },
-        )),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _navigateToAddScreen(context);
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
+  // At the beginning, we fetch the first 20 posts
+  int _page = 1;
+  int _limit = 20;
 
-  Future loadList() {
-    Future<List<bayarkuliah>> futureCases = api.getCases();
-    futureCases.then((casesList) {
-      setState(() {
-        this.listKuliah = casesList;
-      });
+  // There is next page or not
+  bool _hasNextPage = true;
+
+  // Used to display loading indicators when _firstLoad function is running
+  bool _isFirstLoadRunning = false;
+
+  // Used to display loading indicators when _loadMore function is running
+  bool _isLoadMoreRunning = false;
+
+  // This holds the posts fetched from the server
+  List _posts = [];
+
+  // This function will be called when the app launches (see the initState function)
+  void _firstLoad() async {
+    setState(() {
+      _isFirstLoadRunning = true;
     });
-    return futureCases;
+    try {
+      final res = await http.get(Uri.parse("$_baseUrl?page=$_page"));
+      setState(() {
+        _posts = json.decode(res.body);
+      });
+    } catch (err) {
+      print(err);
+      print('Something went wrong');
+    }
+
+    setState(() {
+      _isFirstLoadRunning = false;
+    });
   }
 
   _navigateToAddScreen(BuildContext context) async {
@@ -637,7 +702,131 @@ class _BayarKuliahState extends State<BayarKuliah> {
       ),
     );
   }
+
+  // This function will be triggered whenver the user scroll
+  // to near the bottom of the list view
+  void _loadMore() async {
+    if (_hasNextPage == true &&
+        _isFirstLoadRunning == false &&
+        _isLoadMoreRunning == false) {
+      setState(() {
+        _isLoadMoreRunning = true; // Display a progress indicator at the bottom
+      });
+      _page += 1; // Increase _page by 1
+      try {
+        final res = await http.get(Uri.parse("$_baseUrl?page=$_page"));
+
+        final List fetchedPosts = json.decode(res.body);
+        if (fetchedPosts.length > 0) {
+          setState(() {
+            _posts.addAll(fetchedPosts);
+          });
+        } else {
+          // This means there is no more data
+          // and therefore, we will not send another GET request
+          setState(() {
+            _hasNextPage = false;
+          });
+        }
+      } catch (err) {
+        print(err);
+        print('Something went wrong!');
+      }
+
+      setState(() {
+        _isLoadMoreRunning = false;
+      });
+    }
+  }
+
+  // The controller for the ListView
+  ScrollController _scrollController = new ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _firstLoad();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _loadMore();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Bayar Kuliah'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _navigateToAddScreen(context);
+        },
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ),
+      body: _isFirstLoadRunning
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: _posts.length,
+                    itemBuilder: (_, index) => GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Detail(list: _posts, index: index)),
+                      ),
+                      child: Card(
+                        margin:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                        child: ListTile(
+                          title: Text(_posts[index]['id']),
+                          subtitle: Text(_posts[index]['nama_univ']),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // when the _loadMore function is running
+                if (_isLoadMoreRunning == true)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 40),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+
+                // When nothing else to load
+                if (_hasNextPage == false)
+                  Container(
+                    padding: const EdgeInsets.only(top: 30, bottom: 40),
+                    color: Colors.amber,
+                    child: Center(
+                      child: Text('You have fetched all of the content'),
+                    ),
+                  ),
+              ],
+            ),
+    );
+  }
 }
+
+// NEXT
 
 class BayarDonasi extends StatelessWidget {
   @override

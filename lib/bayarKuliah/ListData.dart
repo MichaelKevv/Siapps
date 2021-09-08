@@ -8,10 +8,10 @@ class ListKuliah extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: bayarKuliah == null ? 0 : bayarKuliah.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-              child: InkWell(
+      itemCount: bayarKuliah == null ? 0 : bayarKuliah.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          child: InkWell(
             onTap: () {
               Navigator.push(
                 context,
@@ -24,7 +24,9 @@ class ListKuliah extends StatelessWidget {
               title: Text(bayarKuliah[index].nama_univ),
               subtitle: Text(bayarKuliah[index].kode_univ),
             ),
-          ));
-        });
+          ),
+        );
+      },
+    );
   }
 }
