@@ -122,11 +122,7 @@ class _DetailWidgetState extends State<DetailWidget> {
               style: ElevatedButton.styleFrom(primary: Colors.red),
               onPressed: () {
                 api.deleteCase(widget.bayarKuliah.id);
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => SiAppsHome(),
-                  ),
-                );
+
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (BuildContext context) => BayarKuliah(),

@@ -105,12 +105,6 @@ class _EditDataWidgetState extends State<EditDataWidget> {
                                       ),
                                     );
 
-                                    Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            SiAppsHome(),
-                                      ),
-                                    );
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>

@@ -1,28 +1,25 @@
-import 'package:SiApps/app_service.dart';
 import 'package:SiApps/bayarKuliah/AddDataWidget.dart';
-import 'package:SiApps/bayarKuliah/DetailWidget.dart';
-import 'package:SiApps/bayarKuliah/ListData.dart';
-
-import 'Model/bayarKuliahModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'bayarKuliah/detailWidget.dart';
-
-import 'package:dio/dio.dart';
 import 'bayarKuliah/Detail.dart';
 // @dart=2.9
 
+String name = '';
+String money = '';
 void main() {
   runApp(
     MaterialApp(
-      home: SiAppsHome(),
+      home: LoginPage(),
       title: 'SiApps',
       routes: <String, WidgetBuilder>{
-        '/SiAppsHome': (BuildContext context) => SiAppsHome(),
+        '/LoginPage': (BuildContext context) => LoginPage(),
+        '/SiAppsHome': (BuildContext context) => SiAppsHome(
+              name: name,
+              money: money,
+            ),
         '/BayarSekolah': (BuildContext context) => BayarSekolah(),
         '/BayarKuliah': (BuildContext context) => BayarKuliah(),
         '/BayarDonasi': (BuildContext context) => BayarDonasi(),
@@ -34,9 +31,134 @@ void main() {
   );
 }
 
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController user = new TextEditingController();
+  TextEditingController pass = new TextEditingController();
+
+  String msg = '';
+
+  Future<List> _login() async {
+    final response = await http
+        .post(Uri.parse('https://siapps.000webhostapp.com/login.php'), body: {
+      "username": user.text,
+      "password": pass.text,
+    });
+
+    var datauser = json.decode(response.body);
+
+    if (datauser.length == 0) {
+      setState(() {
+        msg = "Login gagal, silakan ulangi!";
+      });
+    } else {
+      if (datauser[0]['level'] == 'admin') {
+        Navigator.pushReplacementNamed(context, '/SiAppsHome');
+      } else if (datauser[0]['level'] == 'member') {
+        Navigator.pushReplacementNamed(context, '/SiAppsHome');
+      }
+
+      setState(() {
+        name = datauser[0]['name'];
+        money = datauser[0]['money'];
+      });
+    }
+
+    return datauser;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        margin: EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 0),
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 20.0, 0, 20.0),
+                child: Text(
+                  'Login SiApps',
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+              Card(
+                child: Container(
+                  padding: EdgeInsets.all(20.0),
+                  width: 440,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              "Username",
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            TextField(
+                              controller: user,
+                              decoration: InputDecoration(hintText: 'Username'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              "Password",
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            TextField(
+                              controller: pass,
+                              obscureText: true,
+                              decoration: InputDecoration(hintText: 'Password'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                        child: Column(
+                          children: <Widget>[
+                            ElevatedButton(
+                              child: Text("Login"),
+                              onPressed: () {
+                                _login();
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 0),
+                              child: Text(
+                                msg,
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class SiAppsHome extends StatelessWidget {
-  String nama = 'Arry';
-  String money = '189.000';
+  SiAppsHome({required this.name, required this.money});
+  final String name;
+  final String money;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +177,7 @@ class SiAppsHome extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text("Assalamu'alaikum, " + nama),
+                      child: Text("Assalamu'alaikum, " + name),
                     ),
                   ),
                   Card(
@@ -515,30 +637,7 @@ class cardTerkini extends StatelessWidget {
   }
 }
 
-class BayarSekolah extends StatefulWidget {
-  @override
-  _BayarSekolahState createState() => _BayarSekolahState();
-}
-
-class _BayarSekolahState extends State<BayarSekolah> {
-  List data = [];
-
-  Future getData() async {
-    http.Response hasil = await http.get(
-      Uri.parse("https://612e3c43d11e5c0017558446.mockapi.io/sekolah"),
-      headers: {"Accept": 'application/json'},
-    );
-
-    this.setState(() {
-      data = jsonDecode(hasil.body);
-    });
-  }
-
-  @override
-  void initState() {
-    this.getData();
-  }
-
+class BayarSekolah extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -546,106 +645,9 @@ class _BayarSekolahState extends State<BayarSekolah> {
         backgroundColor: Colors.orange,
         title: Text('Bayar Sekolah'),
       ),
-      body: GridView.builder(
-        padding: EdgeInsets.all(5),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemCount: data == null ? 0 : data.length,
-        itemBuilder: (context, i) {
-          return Container(
-            padding: EdgeInsets.all(5),
-            child: Card(
-              child: Column(
-                children: [
-                  if (data == '') ...[
-                    Text('Data Kosong') // masih belum work buat yg ini
-                  ] else ...[
-                    Image.network(
-                      data[i]['image'],
-                      fit: BoxFit.cover,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        data[i]['nama'] == null
-                            ? 'Tidak Ada Data'
-                            : data[i]['nama'],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }
-
-// class BayarKuliah extends StatefulWidget {
-//   @override
-//   _BayarKuliahState createState() => _BayarKuliahState();
-// }
-
-// class _BayarKuliahState extends State<BayarKuliah> {
-//   final ApiService api = ApiService();
-//   List<bayarkuliah> listKuliah = [];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     if (listKuliah == null) {
-//       listKuliah = [];
-//     }
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Colors.green,
-//         title: Text('Bayar Kuliah'),
-//       ),
-//       body: new Container(
-//         child: new Center(
-//             child: new FutureBuilder(
-//           future: loadList(),
-//           builder: (context, snapshot) {
-//             return listKuliah.length > 0
-//                 ? new ListKuliah(bayarKuliah: listKuliah)
-//                 : new Center(
-//                     child: Text('Tidak ada data ditemukan, silakan tambahkan!'),
-//                   );
-//           },
-//         )),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           _navigateToAddScreen(context);
-//         },
-//         tooltip: 'Increment',
-//         child: Icon(Icons.add),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
-//     );
-//   }
-
-//   Future loadList() {
-//     Future<List<bayarkuliah>> futureCases = api.getCases();
-//     futureCases.then((casesList) {
-//       setState(() {
-//         this.listKuliah = casesList;
-//       });
-//     });
-//     return futureCases;
-//   }
-
-//   _navigateToAddScreen(BuildContext context) async {
-//     final result = await Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (BuildContext context) => AddDataWidget(),
-//       ),
-//     );
-//   }
-// }
-
-// NEXT
 
 class BayarKuliah extends StatefulWidget {
   const BayarKuliah({Key? key}) : super(key: key);

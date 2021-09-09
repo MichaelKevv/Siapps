@@ -91,12 +91,7 @@ class _AddDataWidgetState extends State<AddDataWidget> {
                                     nama_univ: _namaUnivController.text,
                                   ),
                                 );
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        SiAppsHome(),
-                                  ),
-                                );
+
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (BuildContext context) =>
