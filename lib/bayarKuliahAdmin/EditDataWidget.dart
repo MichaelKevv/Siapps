@@ -1,13 +1,13 @@
 import 'package:SiApps/main.dart';
 import 'package:flutter/material.dart';
 import 'package:SiApps/app_service.dart';
-// import 'editdatawidget.dart';
 import 'package:SiApps/Model/bayarKuliahModel.dart';
 
 class EditDataWidget extends StatefulWidget {
-  EditDataWidget(this.bayarKuliah);
+  EditDataWidget({required this.list, required this.index});
 
-  final bayarkuliah bayarKuliah;
+  List list;
+  int index;
 
   @override
   _EditDataWidgetState createState() => _EditDataWidgetState();
@@ -24,9 +24,9 @@ class _EditDataWidgetState extends State<EditDataWidget> {
 
   @override
   void initState() {
-    id = widget.bayarKuliah.id;
-    _kodeUnivController.text = widget.bayarKuliah.kode_univ;
-    _namaUnivController.text = widget.bayarKuliah.nama_univ;
+    id = "${widget.list[widget.index]['id']}";
+    _kodeUnivController.text = "${widget.list[widget.index]['kode_univ']}";
+    _namaUnivController.text = "${widget.list[widget.index]['nama_univ']}";
     super.initState();
   }
 
@@ -34,7 +34,7 @@ class _EditDataWidgetState extends State<EditDataWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Cases'),
+        title: Text('Edit Data Kuliah'),
       ),
       body: Form(
         key: _addFormKey,
@@ -108,7 +108,7 @@ class _EditDataWidgetState extends State<EditDataWidget> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            BayarKuliah(),
+                                            BayarKuliahAdmin(),
                                       ),
                                     );
                                   }

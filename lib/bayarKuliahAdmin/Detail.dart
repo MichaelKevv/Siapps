@@ -1,20 +1,21 @@
-import 'package:SiApps/bayarKuliah/EditDataWidget.dart';
+import 'package:SiApps/bayarKuliahAdmin/EditDataWidget.dart';
 import 'package:SiApps/main.dart';
 import 'package:flutter/material.dart';
 import 'package:SiApps/app_service.dart';
 import 'package:SiApps/Model/bayarKuliahModel.dart';
 
-class DetailWidget extends StatefulWidget {
-  DetailWidget(this.bayarKuliah);
+class Detail extends StatefulWidget {
+  Detail({required this.list, required this.index});
 
-  final bayarkuliah bayarKuliah;
+  List list;
+  int index;
 
   @override
-  _DetailWidgetState createState() => _DetailWidgetState();
+  _DetailState createState() => _DetailState();
 }
 
-class _DetailWidgetState extends State<DetailWidget> {
-  _DetailWidgetState();
+class _DetailState extends State<Detail> {
+  _DetailState();
 
   final ApiService api = ApiService();
 
@@ -22,7 +23,7 @@ class _DetailWidgetState extends State<DetailWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail ' + widget.bayarKuliah.nama_univ),
+        title: Text('Detail ' + "${widget.list[widget.index]['nama_univ']}"),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -43,7 +44,7 @@ class _DetailWidgetState extends State<DetailWidget> {
                             color: Colors.black.withOpacity(0.8),
                           ),
                         ),
-                        Text(widget.bayarKuliah.kode_univ)
+                        Text("${widget.list[widget.index]['kode_univ']}")
                       ],
                     ),
                   ),
@@ -54,7 +55,7 @@ class _DetailWidgetState extends State<DetailWidget> {
                         Text('Nama Universitas:',
                             style: TextStyle(
                                 color: Colors.black.withOpacity(0.8))),
-                        Text(widget.bayarKuliah.nama_univ)
+                        Text("${widget.list[widget.index]['nama_univ']}")
                       ],
                     ),
                   ),
@@ -65,9 +66,13 @@ class _DetailWidgetState extends State<DetailWidget> {
                         Spacer(),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Colors.blue),
-                          onPressed: () {
-                            _navigateToEditScreen(context, widget.bayarKuliah);
-                          },
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditDataWidget(
+                                  list: widget.list, index: widget.index),
+                            ),
+                          ),
                           child: Text('Edit',
                               style: TextStyle(color: Colors.white)),
                         ),
@@ -93,15 +98,6 @@ class _DetailWidgetState extends State<DetailWidget> {
     );
   }
 
-  _navigateToEditScreen(BuildContext context, bayarkuliah bayarKuliah) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditDataWidget(bayarKuliah),
-      ),
-    );
-  }
-
   Future<void> _confirmDialog() async {
     return showDialog<void>(
       context: context,
@@ -121,11 +117,10 @@ class _DetailWidgetState extends State<DetailWidget> {
               child: Text('Yes'),
               style: ElevatedButton.styleFrom(primary: Colors.red),
               onPressed: () {
-                api.deleteCase(widget.bayarKuliah.id);
-
+                api.deleteCase("${widget.list[widget.index]['id']}");
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (BuildContext context) => BayarKuliah(),
+                    builder: (BuildContext context) => BayarKuliahAdmin(),
                   ),
                 );
               },

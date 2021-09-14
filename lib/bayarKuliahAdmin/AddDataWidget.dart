@@ -1,7 +1,6 @@
 import 'package:SiApps/main.dart';
 import 'package:flutter/material.dart';
 import 'package:SiApps/app_service.dart';
-// import 'editdatawidget.dart';
 import 'package:SiApps/Model/bayarKuliahModel.dart';
 
 class AddDataWidget extends StatefulWidget {
@@ -95,7 +94,7 @@ class _AddDataWidgetState extends State<AddDataWidget> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        BayarKuliah(),
+                                        BayarKuliahAdmin(),
                                   ),
                                 );
                               }
