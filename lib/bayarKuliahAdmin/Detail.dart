@@ -108,13 +108,13 @@ class _DetailState extends State<Detail> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure want delete this item?'),
+                Text('Apakah ana yakin ingin menghapus data ini?'),
               ],
             ),
           ),
           actions: <Widget>[
             ElevatedButton(
-              child: Text('Yes'),
+              child: Text('Ya'),
               style: ElevatedButton.styleFrom(primary: Colors.red),
               onPressed: () {
                 api.deleteCase("${widget.list[widget.index]['id']}");
@@ -126,7 +126,7 @@ class _DetailState extends State<Detail> {
               },
             ),
             ElevatedButton(
-              child: const Text('No'),
+              child: const Text('Tidak'),
               onPressed: () {
                 Navigator.of(context).pop();
               },

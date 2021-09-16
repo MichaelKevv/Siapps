@@ -55,12 +55,69 @@ class _DetailMState extends State<DetailM> {
                       ],
                     ),
                   ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    child: Row(
+                      children: <Widget>[
+                        Spacer(),
+                        ElevatedButton(
+                          onPressed: () {
+                            _confirmDialog();
+                          },
+                          child: Text('Bayar Sekarang',
+                              style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(primary: Colors.blue),
+                        ),
+                        Spacer()
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _confirmDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Bayar'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Apakah anda ingin membayar ' +
+                    "${widget.list[widget.index]['nama_univ']}" +
+                    "?"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('Ya'),
+              style: ElevatedButton.styleFrom(primary: Colors.red),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => BayarKuliahMember(),
+                  ),
+                );
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Tidak'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
