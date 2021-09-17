@@ -1,30 +1,25 @@
-import 'package:SiApps/bayarKuliahAdmin/AddDataWidget.dart';
+// @dart=2.9
+import 'package:SiApps/adminApp/bayarKuliahAdmin/AddDataWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-import 'bayarKuliahAdmin/Detail.dart';
-import 'bayarKuliahMember/DetailM.dart';
-// @dart=2.9
+import 'adminApp/bayarKuliahAdmin/Detail.dart';
+import 'memberApp/bayarKuliahMember/DetailM.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-String name = '';
-String money = '';
-void main() {
+enum LoginStatus { notSignIn, signIn }
+enum isAdmin { admin, member }
+void main() async {
   runApp(
     MaterialApp(
-      home: LoginPage(),
+      home: Login(),
       title: 'SiApps',
       routes: <String, WidgetBuilder>{
-        '/LoginPage': (BuildContext context) => LoginPage(),
-        '/SiAppsHomeAdmin': (BuildContext context) => SiAppsHomeAdmin(
-              name: name,
-              money: money,
-            ),
-        '/SiAppsHomeMember': (BuildContext context) => SiAppsHomeMember(
-              name: name,
-              money: money,
-            ),
+        '/LoginPage': (BuildContext context) => Login(),
+        '/SiAppsHomeAdmin': (BuildContext context) => SiAppsHomeAdmin(),
+        '/SiAppsHomeMember': (BuildContext context) => SiAppsHomeMember(),
         '/BayarSekolah': (BuildContext context) => BayarSekolah(),
         '/BayarKuliahAdmin': (BuildContext context) => BayarKuliahAdmin(),
         '/BayarKuliahMember': (BuildContext context) => BayarKuliahMember(),
@@ -37,134 +32,441 @@ void main() {
   );
 }
 
-class LoginPage extends StatefulWidget {
+// class SplashScreen extends StatefulWidget {
+//   const SplashScreen({Key key}) : super(key: key);
+
+//   @override
+//   _SplashScreenState createState() => _SplashScreenState();
+// }
+
+// class _SplashScreenState extends State<SplashScreen> {
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     Future.delayed(Duration(seconds: 1), () {
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => LoginPage(),
+//         ),
+//       );
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: Text('Loading...'),
+//       ),
+//     );
+//   }
+// }
+
+// class LoginPage extends StatefulWidget {
+//   @override
+//   _LoginPageState createState() => _LoginPageState();
+// }
+
+// class _LoginPageState extends State<LoginPage> {
+//   TextEditingController user = new TextEditingController();
+//   TextEditingController pass = new TextEditingController();
+
+//   String msg = '';
+
+//   Future<List> _login() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     final response = await http
+//         .post(Uri.parse('https://siapps.000webhostapp.com/login.php'), body: {
+//       "username": user.text,
+//       "password": pass.text,
+//     });
+
+//     var datauser = json.decode(response.body);
+
+//     if (datauser.length == 0) {
+//       setState(() {
+//         msg = "Login gagal, silakan ulangi!";
+//       });
+//     } else {
+//       prefs.setBool("isLoggedIn", true);
+//       prefs.setString("name", datauser[0]['name']);
+//       prefs.setString("money", datauser[0]['money']);
+
+//       if (datauser[0]['level'] == 'admin') {
+//         prefs.setBool("isAdmin", true);
+//         Navigator.pushReplacementNamed(context, '/SiAppsHomeAdmin');
+//       } else if (datauser[0]['level'] == 'member') {
+//         prefs.setBool("isMember", true);
+//         Navigator.pushReplacementNamed(context, '/SiAppsHomeMember');
+//       }
+//     }
+
+//     return datauser;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Container(
+//         margin: EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 0),
+//         child: Center(
+//           child: Column(
+//             children: <Widget>[
+//               Padding(
+//                 padding: const EdgeInsets.fromLTRB(0, 20.0, 0, 20.0),
+//                 child: Text(
+//                   'Login SiApps',
+//                   style: TextStyle(fontSize: 20.0),
+//                 ),
+//               ),
+//               Card(
+//                 child: Container(
+//                   padding: EdgeInsets.all(20.0),
+//                   width: 440,
+//                   child: Column(
+//                     children: <Widget>[
+//                       Container(
+//                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+//                         child: Column(
+//                           children: <Widget>[
+//                             Text(
+//                               "Username",
+//                               style: TextStyle(fontSize: 18.0),
+//                             ),
+//                             TextField(
+//                               controller: user,
+//                               decoration: InputDecoration(hintText: 'Username'),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                       Container(
+//                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+//                         child: Column(
+//                           children: <Widget>[
+//                             Text(
+//                               "Password",
+//                               style: TextStyle(fontSize: 18.0),
+//                             ),
+//                             TextField(
+//                               controller: pass,
+//                               obscureText: true,
+//                               decoration: InputDecoration(hintText: 'Password'),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                       Container(
+//                         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+//                         child: Column(
+//                           children: <Widget>[
+//                             ElevatedButton(
+//                               child: Text("Login"),
+//                               onPressed: () {
+//                                 _login();
+//                               },
+//                             ),
+//                             Padding(
+//                               padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 0),
+//                               child: Text(
+//                                 msg,
+//                                 style: TextStyle(color: Colors.red),
+//                               ),
+//                             )
+//                           ],
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class Login extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  TextEditingController user = new TextEditingController();
-  TextEditingController pass = new TextEditingController();
-
+class _LoginState extends State<Login> {
   String msg = '';
+  String user;
+  String pass;
+  LoginStatus _loginStatus = LoginStatus.notSignIn;
+  isAdmin _isAdmin;
+  final _key = new GlobalKey<FormState>();
 
-  Future<List> _login() async {
+  bool _secureText = true;
+
+  showHide() {
+    setState(() {
+      _secureText = !_secureText;
+    });
+  }
+
+  check() {
+    final form = _key.currentState;
+    if (form.validate()) {
+      form.save();
+      login();
+    }
+  }
+
+  login() async {
     final response = await http
         .post(Uri.parse('https://siapps.000webhostapp.com/login.php'), body: {
-      "username": user.text,
-      "password": pass.text,
+      "username": user,
+      "password": pass,
     });
 
     var datauser = json.decode(response.body);
+    String nameAPI = datauser[0]['name'];
+    String moneyAPI = datauser[0]['money'];
+    String id = datauser[0]['id'];
 
     if (datauser.length == 0) {
+      print("fail");
       setState(() {
         msg = "Login gagal, silakan ulangi!";
       });
     } else {
       if (datauser[0]['level'] == 'admin') {
-        Navigator.pushReplacementNamed(context, '/SiAppsHomeAdmin');
+        setState(() {
+          int value = 1;
+          int admin = 1;
+          _loginStatus = LoginStatus.signIn;
+          _isAdmin = isAdmin.admin;
+          savePref(admin, value, nameAPI, moneyAPI, id);
+          print(admin);
+        });
+        print('Berhasil login admin');
       } else if (datauser[0]['level'] == 'member') {
-        Navigator.pushReplacementNamed(context, '/SiAppsHomeMember');
+        setState(() {
+          int value = 1;
+          int admin = 0;
+          _loginStatus = LoginStatus.signIn;
+          _isAdmin = isAdmin.member;
+          savePref(admin, value, nameAPI, moneyAPI, id);
+        });
+        print('Berhasil login member');
       }
-
-      setState(() {
-        name = datauser[0]['name'];
-        money = datauser[0]['money'];
-      });
     }
+  }
 
-    return datauser;
+  // loginToast(String toast) {
+  //   return Fluttertoast.showToast(
+  //       msg: toast,
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //       timeInSecForIos: 1,
+  //       backgroundColor: Colors.red,
+  //       textColor: Colors.white);
+  // }
+
+  savePref(int admin, int value, String name, String money, String id) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      preferences.setInt("isAdmin", admin);
+      preferences.setInt("value", value);
+      preferences.setString("name", name);
+      preferences.setString("money", money);
+      preferences.setString("id", id);
+      preferences.commit();
+    });
+  }
+
+  var value, admin;
+
+  getPref() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      value = preferences.getInt("value");
+      admin = preferences.getInt("isAdmin");
+      _loginStatus = value == 1 ? LoginStatus.signIn : LoginStatus.notSignIn;
+      _isAdmin = admin == 1 ? isAdmin.admin : isAdmin.member;
+      print(_isAdmin);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPref();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 0),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 20.0, 0, 20.0),
-                child: Text(
-                  'Login SiApps',
-                  style: TextStyle(fontSize: 20.0),
-                ),
-              ),
-              Card(
-                child: Container(
-                  padding: EdgeInsets.all(20.0),
-                  width: 440,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              "Username",
-                              style: TextStyle(fontSize: 18.0),
+    switch (_loginStatus) {
+      case LoginStatus.notSignIn:
+        return Scaffold(
+          body: Center(
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.all(15.0),
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Form(
+                      key: _key,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(0, 20.0, 0, 20.0),
+                            child: Text(
+                              'Login SiApps',
+                              style: TextStyle(fontSize: 20.0),
                             ),
-                            TextField(
-                              controller: user,
-                              decoration: InputDecoration(hintText: 'Username'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              "Password",
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                            TextField(
-                              controller: pass,
-                              obscureText: true,
-                              decoration: InputDecoration(hintText: 'Password'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                        child: Column(
-                          children: <Widget>[
-                            ElevatedButton(
-                              child: Text("Login"),
-                              onPressed: () {
-                                _login();
+                          ),
+                          //card for Email TextFormField
+                          Card(
+                            elevation: 2.0,
+                            child: TextFormField(
+                              validator: (e) {
+                                if (e.isEmpty) {
+                                  return "Please Insert Email";
+                                }
                               },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 0),
-                              child: Text(
-                                msg,
-                                style: TextStyle(color: Colors.red),
+                              onSaved: (e) => user = e,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
                               ),
-                            )
-                          ],
-                        ),
+                              decoration: InputDecoration(
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.only(left: 20, right: 15),
+                                  child:
+                                      Icon(Icons.person, color: Colors.black),
+                                ),
+                                contentPadding: EdgeInsets.all(18),
+                                labelText: "Username",
+                              ),
+                            ),
+                          ),
+
+                          // Card for password TextFormField
+                          Card(
+                            elevation: 2.0,
+                            child: TextFormField(
+                              validator: (e) {
+                                if (e.isEmpty) {
+                                  return "Password Can't be Empty";
+                                }
+                              },
+                              obscureText: _secureText,
+                              onSaved: (e) => pass = e,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: "Password",
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.only(left: 20, right: 15),
+                                  child: Icon(Icons.phonelink_lock,
+                                      color: Colors.black),
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: showHide,
+                                  icon: Icon(_secureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                ),
+                                contentPadding: EdgeInsets.all(18),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(14.0),
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                            child: Column(
+                              children: <Widget>[
+                                ElevatedButton(
+                                  child: Text("Login"),
+                                  onPressed: () {
+                                    check();
+                                  },
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 10.0, 0, 0),
+                                  child: Text(
+                                    msg,
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
+        break;
+
+      case LoginStatus.signIn:
+        switch (_isAdmin) {
+          case isAdmin.admin:
+            return SiAppsHomeAdmin();
+            break;
+          case isAdmin.member:
+            return SiAppsHomeMember();
+            break;
+        }
+        break;
+    }
   }
 }
 
-class SiAppsHomeAdmin extends StatelessWidget {
-  SiAppsHomeAdmin({required this.name, required this.money});
-  final String name;
-  final String money;
+class SiAppsHomeAdmin extends StatefulWidget {
+  const SiAppsHomeAdmin({Key key}) : super(key: key);
+
+  @override
+  _SiAppsHomeAdminState createState() => _SiAppsHomeAdminState();
+}
+
+class _SiAppsHomeAdminState extends State<SiAppsHomeAdmin> {
+  LoginStatus _loginStatus = LoginStatus.signIn;
+  isAdmin _isAdmin = isAdmin.admin;
+  String money = "", name = "", id = "";
+
+  getPref() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      id = preferences.getString("id");
+      name = preferences.getString("name");
+      money = preferences.getString("money");
+    });
+    print("id" + id);
+    print("name" + name);
+    print("money" + money);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPref();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,6 +480,28 @@ class SiAppsHomeAdmin extends StatelessWidget {
                     'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
                     width: 100,
                     height: 100,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      setState(() {
+                        preferences.remove("isAdmin");
+                        preferences.remove("value");
+                        preferences.remove("name");
+                        preferences.remove("money");
+                        preferences.remove("id");
+
+                        preferences.commit();
+                        _loginStatus = LoginStatus.notSignIn;
+                        _isAdmin = null;
+                      });
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext ctx) => Login()));
+                    },
+                    child: Text('Logout'),
                   ),
                   Padding(
                     padding: EdgeInsets.all(10),
@@ -454,10 +778,36 @@ class SiAppsHomeAdmin extends StatelessWidget {
   }
 }
 
-class SiAppsHomeMember extends StatelessWidget {
-  SiAppsHomeMember({required this.name, required this.money});
-  final String name;
-  final String money;
+class SiAppsHomeMember extends StatefulWidget {
+  const SiAppsHomeMember({Key key}) : super(key: key);
+
+  @override
+  _SiAppsHomeMemberState createState() => _SiAppsHomeMemberState();
+}
+
+class _SiAppsHomeMemberState extends State<SiAppsHomeMember> {
+  LoginStatus _loginStatus = LoginStatus.signIn;
+  isAdmin _isAdmin = isAdmin.admin;
+  String money = "", name = "", id = "";
+
+  getPref() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      id = preferences.getString("id");
+      name = preferences.getString("name");
+      money = preferences.getString("money");
+    });
+    print("id" + id);
+    print("name" + name);
+    print("money" + money);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPref();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -471,6 +821,28 @@ class SiAppsHomeMember extends StatelessWidget {
                     'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
                     width: 100,
                     height: 100,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      setState(() {
+                        preferences.remove("isAdmin");
+                        preferences.remove("value");
+                        preferences.remove("name");
+                        preferences.remove("money");
+                        preferences.remove("id");
+
+                        preferences.commit();
+                        _loginStatus = LoginStatus.notSignIn;
+                        _isAdmin = null;
+                      });
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext ctx) => Login()));
+                    },
+                    child: Text('Logout'),
                   ),
                   Padding(
                     padding: EdgeInsets.all(10),
@@ -748,7 +1120,7 @@ class SiAppsHomeMember extends StatelessWidget {
 }
 
 class cardUtama extends StatelessWidget {
-  cardUtama({required this.icon, required this.teks, required this.warna});
+  cardUtama({this.icon, this.teks, this.warna});
   final IconData icon;
   final String teks;
   final Color warna;
@@ -785,11 +1157,7 @@ class cardUtama extends StatelessWidget {
 }
 
 class cardLayanan extends StatelessWidget {
-  cardLayanan(
-      {required this.icon,
-      required this.teks,
-      required this.warna,
-      required this.url});
+  cardLayanan({this.icon, this.teks, this.warna, this.url});
   final IconData icon;
   final String teks;
   final Color warna;
@@ -830,7 +1198,7 @@ class cardLayanan extends StatelessWidget {
 }
 
 class cardDigital extends StatelessWidget {
-  cardDigital({required this.icon, required this.teks, required this.warna});
+  cardDigital({this.icon, this.teks, this.warna});
   final IconData icon;
   final String teks;
   final Color warna;
@@ -873,7 +1241,7 @@ class cardDigital extends StatelessWidget {
 }
 
 class cardTokoHalal extends StatelessWidget {
-  cardTokoHalal({required this.teks});
+  cardTokoHalal({this.teks});
   final String teks;
 
   @override
@@ -909,7 +1277,7 @@ class cardTokoHalal extends StatelessWidget {
 }
 
 class cardTerkini extends StatelessWidget {
-  cardTerkini({required this.teks, required this.image});
+  cardTerkini({this.teks, this.image});
   final String teks;
   final String image;
 
@@ -948,8 +1316,10 @@ class BayarSekolah extends StatelessWidget {
   }
 }
 
+// BAYAR KULIAH ADMIN
+
 class BayarKuliahAdmin extends StatefulWidget {
-  const BayarKuliahAdmin({Key? key}) : super(key: key);
+  const BayarKuliahAdmin({Key key}) : super(key: key);
 
   @override
   _BayarKuliahAdminState createState() => _BayarKuliahAdminState();
@@ -1129,10 +1499,10 @@ class _BayarKuliahAdminState extends State<BayarKuliahAdmin> {
   }
 }
 
-// NEXT
+// BAYAR KULIAH MEMBER
 
 class BayarKuliahMember extends StatefulWidget {
-  const BayarKuliahMember({Key? key}) : super(key: key);
+  const BayarKuliahMember({Key key}) : super(key: key);
 
   @override
   _BayarKuliahMemberState createState() => _BayarKuliahMemberState();
@@ -1145,7 +1515,6 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
 
   // At the beginning, we fetch the first 20 posts
   int _page = 1;
-  int _limit = 20;
 
   // There is next page or not
   bool _hasNextPage = true;

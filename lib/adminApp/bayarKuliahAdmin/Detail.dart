@@ -1,25 +1,30 @@
-import 'package:SiApps/bayarKuliahMember/EditDataWidgetM.dart';
+import 'package:SiApps/adminApp/bayarKuliahAdmin/Detail.dart';
+import 'package:SiApps/adminApp/bayarKuliahAdmin/EditDataWidget.dart';
 import 'package:SiApps/main.dart';
 import 'package:flutter/material.dart';
+import 'package:SiApps/app_service.dart';
+import 'package:SiApps/Model/bayarKuliahModel.dart';
 
-class DetailM extends StatefulWidget {
-  DetailM({required this.list, required this.index});
+class Detail extends StatefulWidget {
+  Detail({required this.list, required this.index});
 
   List list;
   int index;
 
   @override
-  _DetailMState createState() => _DetailMState();
+  _DetailState createState() => _DetailState();
 }
 
-class _DetailMState extends State<DetailM> {
-  _DetailMState();
+class _DetailState extends State<Detail> {
+  _DetailState();
+
+  final ApiService api = ApiService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail ' + "${widget.list[widget.index]['title']}"),
+        title: Text('Detail ' + "${widget.list[widget.index]['nama_univ']}"),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -61,12 +66,25 @@ class _DetailMState extends State<DetailM> {
                       children: <Widget>[
                         Spacer(),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(primary: Colors.blue),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditDataWidget(
+                                  list: widget.list, index: widget.index),
+                            ),
+                          ),
+                          child: Text('Edit',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        Padding(padding: EdgeInsets.all(10)),
+                        ElevatedButton(
                           onPressed: () {
                             _confirmDialog();
                           },
-                          child: Text('Bayar Sekarang',
+                          child: Text('Delete',
                               style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(primary: Colors.blue),
+                          style: ElevatedButton.styleFrom(primary: Colors.red),
                         ),
                         Spacer()
                       ],
@@ -87,13 +105,11 @@ class _DetailMState extends State<DetailM> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Bayar'),
+          title: Text('Warning!'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Apakah anda ingin membayar ' +
-                    "${widget.list[widget.index]['nama_univ']}" +
-                    "?"),
+                Text('Apakah ana yakin ingin menghapus data ini?'),
               ],
             ),
           ),
@@ -102,9 +118,10 @@ class _DetailMState extends State<DetailM> {
               child: Text('Ya'),
               style: ElevatedButton.styleFrom(primary: Colors.red),
               onPressed: () {
+                api.deleteCase("${widget.list[widget.index]['id']}");
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (BuildContext context) => BayarKuliahMember(),
+                    builder: (BuildContext context) => BayarKuliahAdmin(),
                   ),
                 );
               },
