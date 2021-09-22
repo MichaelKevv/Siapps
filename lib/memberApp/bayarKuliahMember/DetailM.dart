@@ -1,5 +1,6 @@
 import 'package:SiApps/memberApp/bayarKuliahMember/DetailM.dart';
 import 'package:SiApps/main.dart';
+import 'package:SiApps/PaymentList/PaymentList.dart';
 import 'package:flutter/material.dart';
 
 class DetailM extends StatefulWidget {
@@ -19,7 +20,7 @@ class _DetailMState extends State<DetailM> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail ' + "${widget.list[widget.index]['title']}"),
+        title: Text('Detail ' + "${widget.list[widget.index]['nama_univ']}"),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -104,7 +105,7 @@ class _DetailMState extends State<DetailM> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (BuildContext context) => BayarKuliahMember(),
+                    builder: (BuildContext context) => PaymentList(),
                   ),
                 );
               },

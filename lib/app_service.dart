@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:SiApps/Model/bayarKuliahModel.dart';
+import 'package:SiApps/Model/paymentListModel.dart';
 import 'package:http/http.dart';
 
 class ApiService {
@@ -65,6 +66,22 @@ class ApiService {
       print("Case deleted");
     } else {
       throw "Gagal menghapus data";
+    }
+  }
+
+  Future<List<paymentlist>> getData() async {
+    Response res = await get(
+      Uri.parse('https://613635f28700c50017ef5497.mockapi.io/payment_list'),
+    );
+    // print("${res.statusCode}");
+    // print("${res.body}");
+    if (res.statusCode == 200) {
+      List<dynamic> body = jsonDecode(res.body);
+      List<paymentlist> paymentList =
+          body.map((dynamic item) => paymentlist.fromJson(item)).toList();
+      return paymentList;
+    } else {
+      throw "Gagal load data";
     }
   }
 }

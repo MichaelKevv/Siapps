@@ -1,4 +1,5 @@
 import 'package:SiApps/main.dart';
+import 'package:SiApps/memberApp/bayarKuliahMember/bayarKuliahMember.dart';
 import 'package:flutter/material.dart';
 import 'package:SiApps/app_service.dart';
 import 'package:SiApps/Model/bayarKuliahModel.dart';
@@ -107,7 +108,7 @@ class _EditDataWidgetMState extends State<EditDataWidgetM> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            BayarKuliahAdmin(),
+                                            BayarKuliahMember(),
                                       ),
                                     );
                                   }

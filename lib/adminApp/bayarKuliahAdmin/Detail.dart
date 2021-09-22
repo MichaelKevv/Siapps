@@ -1,5 +1,6 @@
 import 'package:SiApps/adminApp/bayarKuliahAdmin/Detail.dart';
 import 'package:SiApps/adminApp/bayarKuliahAdmin/EditDataWidget.dart';
+import 'package:SiApps/adminApp/bayarKuliahAdmin/bayarKuliahAdmin.dart';
 import 'package:SiApps/main.dart';
 import 'package:flutter/material.dart';
 import 'package:SiApps/app_service.dart';

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.siapps.siapps">
    <application
-        android:label="siapps"
+        android:label="SiApps"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

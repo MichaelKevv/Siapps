@@ -1,24 +1,27 @@
 // @dart=2.9
+import 'package:SiApps/adminApp/bayarKuliahAdmin/AddDataWidget.dart';
+import 'package:SiApps/adminApp/bayarKuliahAdmin/Detail.dart';
 import 'package:SiApps/memberApp/bayarKuliahMember/DetailM.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-class BayarKuliahMember extends StatefulWidget {
-  const BayarKuliahMember({Key key}) : super(key: key);
+class BayarKuliahAdmin extends StatefulWidget {
+  const BayarKuliahAdmin({Key key}) : super(key: key);
 
   @override
-  _BayarKuliahMemberState createState() => _BayarKuliahMemberState();
+  _BayarKuliahAdminState createState() => _BayarKuliahAdminState();
 }
 
-class _BayarKuliahMemberState extends State<BayarKuliahMember> {
+class _BayarKuliahAdminState extends State<BayarKuliahAdmin> {
   // We will fetch data from this Rest api
   final _baseUrl =
       'https://siapps.000webhostapp.com/bayarKuliah/getDataKuliah.php';
 
   // At the beginning, we fetch the first 20 posts
   int _page = 1;
+  int _limit = 20;
 
   // There is next page or not
   bool _hasNextPage = true;
@@ -50,6 +53,14 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
     setState(() {
       _isFirstLoadRunning = false;
     });
+  }
+
+  _navigateToAddScreen(BuildContext context) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => AddDataWidget(),
+      ),
+    );
   }
 
   // This function will be triggered whenver the user scroll
@@ -115,6 +126,13 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
       appBar: AppBar(
         title: Text('Bayar Kuliah'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _navigateToAddScreen(context);
+        },
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ),
       body: _isFirstLoadRunning
           ? Center(
               child: CircularProgressIndicator(),
@@ -129,8 +147,9 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                DetailM(list: _posts, index: index)),
+                          builder: (context) =>
+                              Detail(list: _posts, index: index),
+                        ),
                       ),
                       child: Card(
                         margin:

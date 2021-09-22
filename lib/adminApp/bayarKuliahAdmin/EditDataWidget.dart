@@ -1,3 +1,4 @@
+import 'package:SiApps/adminApp/bayarKuliahAdmin/bayarKuliahAdmin.dart';
 import 'package:SiApps/main.dart';
 import 'package:flutter/material.dart';
 import 'package:SiApps/app_service.dart';
@@ -42,87 +43,89 @@ class _EditDataWidgetState extends State<EditDataWidget> {
           child: Container(
             padding: EdgeInsets.all(20.0),
             child: Card(
-                child: Container(
-                    padding: EdgeInsets.all(10.0),
-                    width: 440,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Column(
-                            children: <Widget>[
-                              Text('Kode Universitas'),
-                              TextFormField(
-                                controller: _kodeUnivController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Masukkan Kode Universitas',
-                                ),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Tolong masukkan kode universitas';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {},
-                              ),
-                            ],
+              child: Container(
+                padding: EdgeInsets.all(10.0),
+                width: 440,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Column(
+                        children: <Widget>[
+                          Text('Kode Universitas'),
+                          TextFormField(
+                            controller: _kodeUnivController,
+                            decoration: const InputDecoration(
+                              hintText: 'Masukkan Kode Universitas',
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Tolong masukkan kode universitas';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {},
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Column(
-                            children: <Widget>[
-                              Text('Nama Universitas'),
-                              TextFormField(
-                                controller: _namaUnivController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Masukkan Nama Universitas',
-                                ),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Tolong masukkan nama universitas';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {},
-                              ),
-                            ],
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Column(
+                        children: <Widget>[
+                          Text('Nama Universitas'),
+                          TextFormField(
+                            controller: _namaUnivController,
+                            decoration: const InputDecoration(
+                              hintText: 'Masukkan Nama Universitas',
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Tolong masukkan nama universitas';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {},
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                onPressed: () {
-                                  if (_addFormKey.currentState!.validate()) {
-                                    _addFormKey.currentState!.save();
-                                    api.updateCases(
-                                      bayarkuliah(
-                                        id: id,
-                                        kode_univ: _kodeUnivController.text,
-                                        nama_univ: _namaUnivController.text,
-                                      ),
-                                    );
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      child: Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_addFormKey.currentState!.validate()) {
+                                _addFormKey.currentState!.save();
+                                api.updateCases(
+                                  bayarkuliah(
+                                    id: id,
+                                    kode_univ: _kodeUnivController.text,
+                                    nama_univ: _namaUnivController.text,
+                                  ),
+                                );
 
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            BayarKuliahAdmin(),
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Text('Save',
-                                    style: TextStyle(color: Colors.white)),
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.blue),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ))),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        BayarKuliahAdmin(),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Text('Save',
+                                style: TextStyle(color: Colors.white)),
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.blue),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
