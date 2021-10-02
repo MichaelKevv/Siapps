@@ -13,6 +13,12 @@ class BayarKuliahMember extends StatefulWidget {
 }
 
 class _BayarKuliahMemberState extends State<BayarKuliahMember> {
+  TextEditingController kode_univ = TextEditingController();
+  TextEditingController nama_univ = TextEditingController();
+
+  final _searchUrl =
+      'https://siapps.000webhostapp.com/bayarKuliah/searchDataKuliah.php';
+
   // We will fetch data from this Rest api
   final _baseUrl =
       'https://siapps.000webhostapp.com/bayarKuliah/getDataKuliah.php';
@@ -31,6 +37,28 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
 
   // This holds the posts fetched from the server
   List _posts = [];
+
+  void _searchData() async {
+    setState(() {
+      _isFirstLoadRunning = true;
+    });
+    try {
+      var kodeuniv = kode_univ.text;
+      var namauniv = nama_univ.text;
+      final res = await http
+          .get(Uri.parse("$_searchUrl?kodeUniv=$kodeuniv&namaUniv=$namauniv"));
+      setState(() {
+        _posts = json.decode(res.body);
+      });
+    } catch (err) {
+      print(err);
+      print('Something went wrong');
+    }
+
+    setState(() {
+      _isFirstLoadRunning = false;
+    });
+  }
 
   // This function will be called when the app launches (see the initState function)
   void _firstLoad() async {
@@ -114,6 +142,14 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bayar Kuliah'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showsearchform(context);
+            },
+          )
+        ],
       ),
       body: _isFirstLoadRunning
           ? Center(
@@ -167,4 +203,135 @@ class _BayarKuliahMemberState extends State<BayarKuliahMember> {
             ),
     );
   }
+
+  void showsearchform(context) {
+    String _valGender;
+    List _listGender = ["CLOSED", "OPEN"];
+
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SingleChildScrollView(
+            child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return Container(
+                height: MediaQuery.of(context).size.height * 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                      ),
+                      Text(
+                        "Search",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                      ),
+                      TextField(
+                        controller: kode_univ,
+                        // textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.format_list_numbered),
+                          hintText: 'Input Kode Universitas disini',
+                          labelText: 'Kode Universitas',
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextField(
+                        controller: nama_univ,
+                        // textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.format_list_numbered),
+                          hintText: 'Input Nama Universitas disini',
+                          labelText: 'Nama Universitas',
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      // DropdownButton(
+                      //   isExpanded: true,
+                      //   hint: Text("Select The Status"),
+                      //   value: _valGender,
+                      //   items: _listGender.map((value) {
+                      //     return DropdownMenuItem(
+                      //       child: Text(value),
+                      //       value: value,
+                      //     );
+                      //   }).toList(),
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       _valGender = value;
+                      //     });
+                      //   },
+                      // ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _searchData();
+                            Navigator.pop(context);
+                          });
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search),
+                            Text("Search"),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
+        });
+  }
+
+  // _selectDate(BuildContext context) async {
+  //   DateTime newSelectedDate = await showDatePicker(
+  //       context: context,
+  //       initialDate: _selectedDate != null ? _selectedDate : DateTime.now(),
+  //       firstDate: DateTime(2000),
+  //       lastDate: DateTime(2040),
+  //       builder: (BuildContext context, Widget child) {
+  //         return Theme(
+  //           data: ThemeData.dark().copyWith(
+  //             colorScheme: ColorScheme.light(
+  //               primary: Colors.green,
+  //               onPrimary: Colors.black,
+  //               surface: Colors.black,
+  //               onSurface: Colors.black,
+  //             ),
+  //             dialogBackgroundColor: Colors.white,
+  //           ),
+  //           child: child,
+  //         );
+  //       });
+
+  //   if (newSelectedDate != null) {
+  //     _selectedDate = newSelectedDate;
+  //     _textEditingController
+  //       ..text = DateFormat("d-MMM-yy").format(_selectedDate)
+  //       ..selection = TextSelection.fromPosition(
+  //         TextPosition(
+  //             offset: _textEditingController.text.length,
+  //             affinity: TextAffinity.upstream),
+  //       );
+  //   }
+  // }
+}
+
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
 }

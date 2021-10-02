@@ -17,6 +17,7 @@ enum isAdmin { admin, member }
 void main() async {
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Login(),
       title: 'SiApps',
       routes: <String, WidgetBuilder>{
