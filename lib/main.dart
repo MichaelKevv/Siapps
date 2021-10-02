@@ -2,7 +2,9 @@
 import 'package:SiApps/adminApp/bayarKuliahAdmin/AddDataWidget.dart';
 import 'package:SiApps/adminApp/bayarKuliahAdmin/bayarKuliahAdmin.dart';
 import 'package:SiApps/PaymentList/PaymentList.dart';
+import 'package:SiApps/adminApp/bayarSekolahAdmin/bayarSekolahAdmin.dart';
 import 'package:SiApps/memberApp/bayarKuliahMember/bayarKuliahMember.dart';
+import 'package:SiApps/memberApp/bayarSekolahMember/bayarSekolahMember.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +26,8 @@ void main() async {
         '/LoginPage': (BuildContext context) => Login(),
         '/SiAppsHomeAdmin': (BuildContext context) => SiAppsHomeAdmin(),
         '/SiAppsHomeMember': (BuildContext context) => SiAppsHomeMember(),
-        '/BayarSekolah': (BuildContext context) => BayarSekolah(),
+        '/BayarSekolahAdmin': (BuildContext context) => BayarSekolahAdmin(),
+        '/BayarSekolahMember': (BuildContext context) => BayarSekolahMember(),
         '/BayarKuliahAdmin': (BuildContext context) => BayarKuliahAdmin(),
         '/BayarKuliahMember': (BuildContext context) => BayarKuliahMember(),
         '/BayarDonasi': (BuildContext context) => BayarDonasi(),
@@ -428,7 +431,7 @@ class _SiAppsHomeAdminState extends State<SiAppsHomeAdmin> {
                           icon: FontAwesomeIcons.school,
                           teks: 'Bayar Sekolah',
                           warna: Colors.orange,
-                          url: '/BayarSekolah',
+                          url: '/BayarSekolahAdmin',
                         ),
                         cardLayanan(
                           icon: FontAwesomeIcons.graduationCap,
@@ -769,7 +772,7 @@ class _SiAppsHomeMemberState extends State<SiAppsHomeMember> {
                           icon: FontAwesomeIcons.school,
                           teks: 'Bayar Sekolah',
                           warna: Colors.orange,
-                          url: '/BayarSekolah',
+                          url: '/BayarSekolahMember',
                         ),
                         cardLayanan(
                           icon: FontAwesomeIcons.graduationCap,
@@ -1136,18 +1139,6 @@ class cardTerkini extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class BayarSekolah extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Text('Bayar Sekolah'),
       ),
     );
   }

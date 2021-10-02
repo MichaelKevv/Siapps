@@ -1,9 +1,63 @@
 import 'dart:convert';
 import 'package:SiApps/Model/bayarKuliahModel.dart';
+import 'package:SiApps/Model/bayarSekolahModel.dart';
 import 'package:SiApps/Model/paymentListModel.dart';
 import 'package:http/http.dart';
 
 class ApiService {
+  // bayar sekolah
+  Future<bayarsekolah> createDataSekolah(bayarsekolah BayarSekolah) async {
+    final Response response = await post(
+      Uri.parse(
+          'https://siapps.000webhostapp.com/bayarSekolah/addDataSekolah.php'),
+      body: {
+        'kodeSekolah': BayarSekolah.kode_sekolah,
+        'namaSekolah': BayarSekolah.nama_sekolah,
+        'spp': BayarSekolah.spp,
+      },
+    );
+    if (response.statusCode == 200) {
+      return bayarsekolah.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Gagal menambahkan data');
+    }
+  }
+
+  Future<bayarsekolah> updateDataSekolah(bayarsekolah BayarSekolah) async {
+    final Response response = await post(
+      Uri.parse(
+          'https://siapps.000webhostapp.com/bayarSekolah/editDataSekolah.php'),
+      body: {
+        'id': BayarSekolah.id,
+        'kodeSekolah': BayarSekolah.kode_sekolah,
+        'namaSekolah': BayarSekolah.nama_sekolah,
+        'spp': BayarSekolah.spp,
+      },
+    );
+    if (response.statusCode == 200) {
+      return bayarsekolah.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Gagal update data');
+    }
+  }
+
+  Future<void> deleteDataSekolah(String id) async {
+    Response res = await post(
+      Uri.parse(
+          'https://siapps.000webhostapp.com/bayarSekolah/deleteDataSekolah.php'),
+      body: {
+        'id': id,
+      },
+    );
+
+    if (res.statusCode == 200) {
+      print("Data Sekolah Terhapus");
+    } else {
+      throw "Gagal menghapus data";
+    }
+  }
+
+  // bayar kuliah
   Future<List<bayarkuliah>> getCases() async {
     Response res = await get(
       Uri.parse(
@@ -69,6 +123,7 @@ class ApiService {
     }
   }
 
+  // payment
   Future<List<paymentlist>> getData() async {
     Response res = await get(
       Uri.parse('https://613635f28700c50017ef5497.mockapi.io/payment_list'),
