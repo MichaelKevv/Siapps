@@ -3,6 +3,7 @@ import 'package:SiApps/Model/paymentListModel.dart';
 import 'package:SiApps/app_service.dart';
 import 'package:SiApps/main.dart';
 import 'package:SiApps/memberApp/bayarKuliahMember/bayarKuliahMember.dart';
+import 'package:SiApps/memberApp/bayarSekolahMember/bayarSekolahMember.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -33,7 +34,7 @@ class _PaymentListState extends State<PaymentList> {
             return listItem.length > 0
                 ? new ListItem(paymentList: listItem)
                 : new Center(
-                    child: Text('Tidak ada data ditemukan, silakan tambahkan!'),
+                    child: Text('Data pembayaran tidak ditemukan!'),
                   );
           },
         )),
@@ -66,11 +67,6 @@ class ListItem extends StatelessWidget {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (BuildContext context) => SiAppsHomeMember(),
-                ),
-              );
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) => BayarKuliahMember(),
                 ),
               );
             },
